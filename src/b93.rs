@@ -115,6 +115,18 @@ impl B93 {
         Ok(Self::new(playfield))
     }
 
+    pub fn pc(&self) -> (u8, u8) {
+        (self.i, self.j)
+    }
+
+    pub fn stack(&self) -> &[i64] {
+        &self.stack[..]
+    }
+
+    pub fn playfield(&self) -> &[[u8; 80]; 25] {
+        &self.playfield
+    }
+
     pub fn next_instruction(&self) -> u8 {
         self.playfield[self.i as usize][self.j as usize]
     }
@@ -153,30 +165,31 @@ impl B93 {
                     _ => panic!("impossible RNG result"),
                 }
             },
+            d @ b'0'..=b'9' => self.push((d - b'0') as i64),
             b'"' => self.string = true,
             b'+' => {
-                let x = self.pop();
                 let y = self.pop();
+                let x = self.pop();
                 self.push(x + y);
             },
             b'-' => {
-                let x = self.pop();
                 let y = self.pop();
+                let x = self.pop();
                 self.push(x - y);
             },
             b'*' => {
-                let x = self.pop();
                 let y = self.pop();
+                let x = self.pop();
                 self.push(x * y);
             },
             b'/' => {
-                let x = self.pop();
                 let y = self.pop();
+                let x = self.pop();
                 self.push(x / y);
             },
             b'%' => {
-                let x = self.pop();
                 let y = self.pop();
+                let x = self.pop();
                 self.push(x % y);
             },
             b'!' => {
@@ -292,7 +305,7 @@ impl B93 {
 
     // the spec is real unclear on this, or what dup should do on empty
     fn peek(&self) -> i64 {
-        self.stack.first().copied().unwrap_or(0)
+        self.stack.last().copied().unwrap_or(0)
     }
 }
 
